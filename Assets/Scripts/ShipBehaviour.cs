@@ -9,7 +9,7 @@ public class ShipBehaviour : MonoBehaviour
     public float Speed = 5f;
     public float TurnRate = 3f;
     public Text DebugText;
-    private Vector2 _previousRotation;
+    private Vector2 _previousDirection;
 
     void Update()
     {
@@ -25,27 +25,41 @@ public class ShipBehaviour : MonoBehaviour
 
     private void LookAt(float horizontal, float vertical)
     {
-        var stickDirection = new Vector3(horizontal, vertical, 0);
+        var stickDirection = new Vector3(horizontal, 0, vertical);
         var direction = transform.position + stickDirection;
-        transform.LookAt(direction);     
+        transform.LookAt(direction);
     }
 
     private void Rotate(float horizontal, float vertical)
     {
-        var position = transform.position;
+        var rotation = GetTurn(horizontal, vertical);
 
-        var quaternion = Quaternion.Lerp(
-            Quaternion.LookRotation(transform.forward, transform.up),
-            Quaternion.LookRotation(position + new Vector3(horizontal, vertical, 0), transform.up),
-            Time.deltaTime * TurnRate);
+        rotation = GetRoll(rotation);
 
-        transform.rotation = quaternion;
-        
-        //debug
-        var euler = transform.rotation.eulerAngles;
-        var current = new Vector2(euler.x, euler.y);
-        var diff = Vector2.Angle(_previousRotation, current);
-        DebugText.text = String.Format("diff: {0}", diff);
-        _previousRotation = current;
+        transform.rotation = rotation;
+    }
+
+    private Quaternion GetRoll(Quaternion rotation)
+    {
+        var currentDirection = new Vector2(transform.forward.x, transform.forward.z);
+        var angle = Vector2.SignedAngle(_previousDirection, currentDirection) * 5;
+        DebugText.text = String.Format("diff: {0}", angle);
+        _previousDirection = currentDirection;
+
+        var euler = rotation.eulerAngles;
+        return Quaternion.Euler(
+            euler.x,
+            euler.y,
+            angle
+        );
+        //return rotation;
+    }
+
+    private Quaternion GetTurn(float horizontal, float vertical)
+    {
+        return Quaternion.Lerp(
+           transform.rotation,
+           Quaternion.LookRotation(new Vector3(horizontal, 0, vertical), transform.up),
+           Time.deltaTime * TurnRate);
     }
 }
