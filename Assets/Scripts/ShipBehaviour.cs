@@ -6,28 +6,41 @@ using UnityEngine.UI;
 
 public class ShipBehaviour : MonoBehaviour
 {
-    public float Speed = 5f;
+    public float TopSpeed = 40f;
+    public float Acceleration = 100f;
     public float TurnRate = 3f;
     public Text DebugText;
     private Vector2 _previousDirection;
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.JoystickButton0))
-            transform.position += transform.forward * Speed * Time.deltaTime;
-
         var horizontal = Input.GetAxis("Horizontal");
         var vertical = Input.GetAxis("Vertical");
 
         if (Mathf.Abs(horizontal) > 0.1 || Mathf.Abs(vertical) > 0.1f)
+        {
             Rotate(horizontal, vertical);
+        }
+
+        if (Input.GetKey(KeyCode.JoystickButton0))
+            Boost(horizontal, vertical);
     }
 
-    private void LookAt(float horizontal, float vertical)
+    private void Boost(float horizontal, float vertical)
     {
-        var stickDirection = new Vector3(horizontal, 0, vertical);
-        var direction = transform.position + stickDirection;
-        transform.LookAt(direction);
+        var direction = new Vector3(horizontal, 0, vertical);
+        
+        var rigidBody = GetComponent<Rigidbody>();
+        rigidBody.AddForce((transform.forward + direction).normalized * Acceleration);
+
+        var velocity = rigidBody.velocity;
+        if (velocity.magnitude > TopSpeed)
+        {
+            velocity = velocity.normalized * TopSpeed;
+            rigidBody.velocity = velocity;
+        }
+        
+        DebugText.text = $"Speed: {velocity.magnitude}";        
     }
 
     private void Rotate(float horizontal, float vertical)
@@ -43,16 +56,17 @@ public class ShipBehaviour : MonoBehaviour
     {
         var currentDirection = new Vector2(transform.forward.x, transform.forward.z);
         var angle = Vector2.SignedAngle(_previousDirection, currentDirection) * 5;
-        DebugText.text = String.Format("diff: {0}", angle);
+        //DebugText.text = String.Format("diff: {0}", angle);
         _previousDirection = currentDirection;
 
         var euler = rotation.eulerAngles;
-        return Quaternion.Euler(
-            euler.x,
+        var result = Quaternion.Euler(
+            0,
             euler.y,
             angle
         );
-        //return rotation;
+        
+        return result;
     }
 
     private Quaternion GetTurn(float horizontal, float vertical)
