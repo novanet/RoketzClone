@@ -16,12 +16,11 @@ public class CameraBehaviour : MonoBehaviour
 
     void Update()
     {
-        var offset = new Vector2();
-        Follow(offset);
+        Follow();
         SetLastPositionToCurrent();
     }
 
-    private void Follow(Vector2 offset = new Vector2())
+    private void Follow()
     {
         transform.position = new Vector3(
             Player.position.x,
