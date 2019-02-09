@@ -11,6 +11,7 @@ public class ShipBehaviour : MonoBehaviour
     public float TurnRate = 3f;
     public Text DebugText;
     private Vector2 _previousDirection;
+    private Vector2 _target;
 
     void Update()
     {
@@ -19,16 +20,18 @@ public class ShipBehaviour : MonoBehaviour
 
         if (Mathf.Abs(horizontal) > 0.1 || Mathf.Abs(vertical) > 0.1f)
         {
-            Rotate(horizontal, vertical);
+            _target = new Vector2(horizontal, vertical);    
         }
 
+        Rotate();
+        
         if (Input.GetKey(KeyCode.JoystickButton0))
-            Boost(horizontal, vertical);
+            Boost();
     }
 
-    private void Boost(float horizontal, float vertical)
+    private void Boost()
     {
-        var direction = new Vector3(horizontal, 0, vertical);
+        var direction = new Vector3(_target.x, 0, _target.y);
         
         var rigidBody = GetComponent<Rigidbody>();
         rigidBody.AddForce((transform.forward + direction).normalized * Acceleration);
@@ -43,9 +46,9 @@ public class ShipBehaviour : MonoBehaviour
         DebugText.text = $"Speed: {velocity.magnitude}";        
     }
 
-    private void Rotate(float horizontal, float vertical)
+    private void Rotate()
     {
-        var rotation = GetTurn(horizontal, vertical);
+        var rotation = GetTurn();
 
         rotation = GetRoll(rotation);
 
@@ -55,7 +58,7 @@ public class ShipBehaviour : MonoBehaviour
     private Quaternion GetRoll(Quaternion rotation)
     {
         var currentDirection = new Vector2(transform.forward.x, transform.forward.z);
-        var angle = Vector2.SignedAngle(_previousDirection, currentDirection) * 5;
+        var angle = Vector2.SignedAngle(_previousDirection, currentDirection) * 7;
         //DebugText.text = String.Format("diff: {0}", angle);
         _previousDirection = currentDirection;
 
@@ -69,11 +72,11 @@ public class ShipBehaviour : MonoBehaviour
         return result;
     }
 
-    private Quaternion GetTurn(float horizontal, float vertical)
+    private Quaternion GetTurn()
     {
         return Quaternion.Lerp(
            transform.rotation,
-           Quaternion.LookRotation(new Vector3(horizontal, 0, vertical), transform.up),
+           Quaternion.LookRotation(new Vector3(_target.x, 0, _target.y), transform.up),
            Time.deltaTime * TurnRate);
     }
 }
