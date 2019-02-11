@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,19 @@ public class ShipBehaviour : MonoBehaviour
         
         if (Input.GetKey(KeyCode.JoystickButton0))
             Boost();
+
+        ApplyGravity();
+        ConstrainToPlane();
+    }
+
+    private void ConstrainToPlane()
+    {
+        transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+    }
+
+    private void ApplyGravity()
+    {
+        GetComponent<Rigidbody>().AddForce(Constants.Gravity);
     }
 
     private void Boost()
