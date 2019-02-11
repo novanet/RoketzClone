@@ -8,29 +8,42 @@ using UnityEngine.UI;
 public class ShipBehaviour : MonoBehaviour
 {
     public float TopSpeed = 40f;
-    public float Acceleration = 100f;
+    public float Acceleration = 60f;
     public float TurnRate = 3f;
     public Text DebugText;
     private Vector2 _previousDirection;
     private Vector2 _target;
 
-    void Update()
+    void FixedUpdate()
     {
         var horizontal = Input.GetAxis("Horizontal");
         var vertical = Input.GetAxis("Vertical");
 
+        // set new target, else continue towards previous one
         if (Mathf.Abs(horizontal) > 0.1 || Mathf.Abs(vertical) > 0.1f)
         {
             _target = new Vector2(horizontal, vertical);    
         }
 
         Rotate();
-        
+
         if (Input.GetKey(KeyCode.JoystickButton0))
             Boost();
+        else
+            Drag();
+            
 
         ApplyGravity();
         ConstrainToPlane();
+    }
+
+    // We'll brake the horizontal movement while keeping gravity intact.
+    private void Drag()
+    {
+        var rigidBody = GetComponent<Rigidbody>();
+        var velocity = rigidBody.velocity;
+        velocity.x = velocity.x * 0.99f;
+        rigidBody.velocity = velocity;
     }
 
     private void ConstrainToPlane()
@@ -45,17 +58,18 @@ public class ShipBehaviour : MonoBehaviour
 
     private void Boost()
     {
-        var direction = new Vector3(_target.x, 0, _target.y);
+        var direction = new Vector3(_target.x, 0, _target.y).normalized;
         
         var rigidBody = GetComponent<Rigidbody>();
-        rigidBody.AddForce((transform.forward + direction).normalized * Acceleration);
-
         var velocity = rigidBody.velocity;
+        velocity += direction * Acceleration * Time.deltaTime;
+
         if (velocity.magnitude > TopSpeed)
         {
             velocity = velocity.normalized * TopSpeed;
-            rigidBody.velocity = velocity;
         }
+
+        rigidBody.velocity = velocity;
         
         DebugText.text = $"Speed: {velocity.magnitude}";        
     }
