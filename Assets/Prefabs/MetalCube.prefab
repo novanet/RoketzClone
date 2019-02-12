@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1643230823089892117}
   - component: {fileID: 6455529499675121080}
   - component: {fileID: 8100103371694699074}
+  - component: {fileID: 8016058047281380398}
   m_Layer: 0
   m_Name: MetalCube
   m_TagString: Untagged
@@ -119,5 +120,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 100b5b8467f686249b97c4b05f7cc298, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8016058047281380398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3041235851641789203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4360040128868e84b9809fedb30a9012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

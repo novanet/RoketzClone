@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = System.Random;
@@ -20,12 +22,14 @@ public class ShipBehaviour : MonoBehaviour
 
     private AudioSource _boostSound;
     private AudioSource _impactSound;
+    private AudioSource _explosionSound;
 
     private void Start()
     {
         var audioSources = GetComponents<AudioSource>();
         _boostSound = audioSources[0];
         _impactSound = audioSources[1];
+        _explosionSound = audioSources[2];
         
         _target = new Vector2(0, 1); // Points upwards
     }
@@ -55,7 +59,8 @@ public class ShipBehaviour : MonoBehaviour
     {
         if (collision.transform.gameObject.tag == "Player")
         {
-            _impactSound.Play();
+            if (!_impactSound.isPlaying)
+                _impactSound.Play();
             Die();
         }
 
@@ -67,10 +72,16 @@ public class ShipBehaviour : MonoBehaviour
 
     private void Explode()
     {
-        for (var i = 0; i < 15; i++)
+        var position = transform.position;
+        
+        _explosionSound.Play();
+        _boostSound.Stop();
+        DisableEverything();
+        
+        for (var i = 0; i < 30; i++)
         {
-            var index = UnityEngine.Random.Range(0, 1);
-            var piece = Instantiate(Wreckage[index], transform.position, Quaternion.identity);
+            var index = UnityEngine.Random.Range(0, 2);
+            var piece = Instantiate(Wreckage[index], position + new Vector3(0, 0, 2f), Quaternion.Euler(0, 0, 0));
             piece.transform.localScale = new Vector3(
                 UnityEngine.Random.Range(0.3f, 2.0f),
                 UnityEngine.Random.Range(0.3f, 2.0f),
@@ -78,21 +89,29 @@ public class ShipBehaviour : MonoBehaviour
                 );
             
             var rigidbody = piece.GetComponent<Rigidbody>();
-//            rigidbody.rotation = Quaternion.Euler(
-//                UnityEngine.Random.Range(0.1f, 2.0f),
-//                UnityEngine.Random.Range(0.1f, 2.0f),
-//                UnityEngine.Random.Range(0.1f, 2.0f)
-//            );
 
-            var direction = UnityEngine.Random.onUnitSphere.normalized;
-            direction.y = 0;
-            if (direction.z < 0)
-                direction.z = direction.z * -1;
+            var direction = new Vector3(
+                UnityEngine.Random.Range(-1f, 1f),
+                0f,
+                UnityEngine.Random.Range(0.25f, 1f)
+                ).normalized;
 
             rigidbody.AddForce(direction * UnityEngine.Random.Range(0.1f, 0.5f));
+
+            rigidbody.rotation = Quaternion.Euler(
+                UnityEngine.Random.Range(0.1f, 0.9f),
+                UnityEngine.Random.Range(0.1f, 0.9f),
+                UnityEngine.Random.Range(0.1f, 0.9f)
+            );
         }
+    }
+
+    private void DisableEverything()
+    {
+        Destroy(GetComponent<Gravity>());
+        Destroy(GetComponent<Rigidbody>());
         
-        gameObject.SetActive(false);
+        transform.position = new Vector3(transform.position.x, -200, transform.position.z);
     }
 
     private void Die()
@@ -139,11 +158,6 @@ public class ShipBehaviour : MonoBehaviour
     private void ConstrainToPlane()
     {
         transform.position = new Vector3(transform.position.x, 0, transform.position.z);
-    }
-
-    private void ApplyGravity()
-    {
-        GetComponent<Rigidbody>().AddForce(Constants.Gravity);
     }
 
     private void Boost()

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2123321047657097946}
   - component: {fileID: 2047511646546919665}
   - component: {fileID: 4923788269689341105}
+  - component: {fileID: 8314284508423399942}
   m_Layer: 0
   m_Name: MetalCylinder
   m_TagString: Untagged
@@ -120,5 +121,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 100b5b8467f686249b97c4b05f7cc298, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8314284508423399942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7683890296060060932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4360040128868e84b9809fedb30a9012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
