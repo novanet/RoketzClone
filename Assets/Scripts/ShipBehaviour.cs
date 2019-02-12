@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ShipBehaviour : MonoBehaviour
@@ -10,7 +10,6 @@ public class ShipBehaviour : MonoBehaviour
     
     private Vector2 _previousDirection;
     private Vector2 _target;
-    private bool _joystickDetected;
     private KeyCode boostButton;
 
     private AudioSource _audioSource;
@@ -20,17 +19,6 @@ public class ShipBehaviour : MonoBehaviour
         _audioSource = GetComponent<AudioSource>();
         
         _target = new Vector2(0, 1); // Points upwards
-        _joystickDetected = Input.GetJoystickNames().Length > 0;
-        InitializeBoostButton();
-        Debug.Log("Joystick attached = " + _joystickDetected);
-    }
-
-    private void InitializeBoostButton()
-    {
-        if (_joystickDetected)
-            boostButton = KeyCode.Joystick1Button0;
-        else
-            boostButton = KeyCode.Space;
     }
 
     void FixedUpdate()
@@ -39,7 +27,7 @@ public class ShipBehaviour : MonoBehaviour
 
         Rotate();
 
-        if (Input.GetKey(boostButton))
+        if (BoostButtonPressed())
             Boost();
         else
             Drag();
@@ -49,31 +37,31 @@ public class ShipBehaviour : MonoBehaviour
         ConstrainToPlane();
     }
 
+    private bool BoostButtonPressed()
+    {
+        return Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.JoystickButton0);
+    }
+
     private void SetDirectionByControllerInput()
     {
-        if (_joystickDetected)
+        var horizontal = Input.GetAxis("Horizontal");
+        var vertical = Input.GetAxis("Vertical");
+        if (Mathf.Abs(horizontal) > 0.1 || Mathf.Abs(vertical) > 0.1f)
         {
-            var horizontal = Input.GetAxis("Horizontal");
-            var vertical = Input.GetAxis("Vertical");
-            if (Mathf.Abs(horizontal) > 0.1 || Mathf.Abs(vertical) > 0.1f)
-            {
-                _target = new Vector2(horizontal, vertical);
-            }
+            _target = new Vector2(horizontal, vertical);
         }
-        else
-        {
-            if (Input.GetKey(KeyCode.A))
-                _target = VectorExtensions.Rotate(_target, TurnRate);
-            else if (Input.GetKey(KeyCode.D))
-                _target = VectorExtensions.Rotate(_target, -TurnRate);
-        }
+
+        if (Input.GetKey(KeyCode.A))
+            _target = VectorExtensions.Rotate(_target, TurnRate);
+        else if (Input.GetKey(KeyCode.D))
+            _target = VectorExtensions.Rotate(_target, -TurnRate);   
     }
 
     // We'll brake any horizontal and upwards movement while keeping gravity intact.
     private void Drag()
     {
-        if (_audioSource.isPlaying)
-            _audioSource.Pause();
+        if (_boostSound.isPlaying)
+            _boostSound.Pause();
         
         var dragMultiplier = 0.99f;
         
@@ -97,8 +85,8 @@ public class ShipBehaviour : MonoBehaviour
 
     private void Boost()
     {
-        if (!_audioSource.isPlaying)
-            _audioSource.Play();    
+        if (!_boostSound.isPlaying)
+            _boostSound.Play();    
         
         var direction = new Vector3(_target.x, 0, _target.y).normalized;
         
