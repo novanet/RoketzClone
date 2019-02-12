@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
+using Random = System.Random;
 
 public class ShipBehaviour : MonoBehaviour
 {
@@ -7,10 +10,13 @@ public class ShipBehaviour : MonoBehaviour
     public float Acceleration = 60f;
     public float TurnRate = 3f;
     public Text DebugText;
+
+    public Transform[] Wreckage;
     
     private Vector2 _previousDirection;
     private Vector2 _target;
     private KeyCode boostButton;
+    private bool _dead = false;
 
     private AudioSource _boostSound;
     private AudioSource _impactSound;
@@ -26,6 +32,12 @@ public class ShipBehaviour : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (_dead)
+        {
+            GetComponent<Rigidbody>().AddForce(Constants.Gravity * 10);
+            return;
+        }
+        
         SetDirectionByControllerInput();
 
         Rotate();
@@ -36,16 +48,56 @@ public class ShipBehaviour : MonoBehaviour
             Drag();
             
 
-        ApplyGravity();
         ConstrainToPlane();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.gameObject.tag.Contains("Player"))
+        if (collision.transform.gameObject.tag == "Player")
         {
             _impactSound.Play();
+            Die();
         }
+
+        if (collision.transform.gameObject.tag == "Scenery")
+        {
+            Explode();
+        }
+    }
+
+    private void Explode()
+    {
+        for (var i = 0; i < 15; i++)
+        {
+            var index = UnityEngine.Random.Range(0, 1);
+            var piece = Instantiate(Wreckage[index], transform.position, Quaternion.identity);
+            piece.transform.localScale = new Vector3(
+                UnityEngine.Random.Range(0.3f, 2.0f),
+                UnityEngine.Random.Range(0.3f, 2.0f),
+                UnityEngine.Random.Range(0.3f, 2.0f)
+                );
+            
+            var rigidbody = piece.GetComponent<Rigidbody>();
+//            rigidbody.rotation = Quaternion.Euler(
+//                UnityEngine.Random.Range(0.1f, 2.0f),
+//                UnityEngine.Random.Range(0.1f, 2.0f),
+//                UnityEngine.Random.Range(0.1f, 2.0f)
+//            );
+
+            var direction = UnityEngine.Random.onUnitSphere.normalized;
+            direction.y = 0;
+            if (direction.z < 0)
+                direction.z = direction.z * -1;
+
+            rigidbody.AddForce(direction * UnityEngine.Random.Range(0.1f, 0.5f));
+        }
+        
+        gameObject.SetActive(false);
+    }
+
+    private void Die()
+    {
+        _dead = true;
     }
 
     private bool BoostButtonPressed()
