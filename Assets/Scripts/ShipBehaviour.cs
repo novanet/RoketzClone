@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ShipBehaviour : MonoBehaviour
@@ -12,11 +12,14 @@ public class ShipBehaviour : MonoBehaviour
     private Vector2 _target;
     private KeyCode boostButton;
 
-    private AudioSource _audioSource;
+    private AudioSource _boostSound;
+    private AudioSource _impactSound;
 
     private void Start()
     {
-        _audioSource = GetComponent<AudioSource>();
+        var audioSources = GetComponents<AudioSource>();
+        _boostSound = audioSources[0];
+        _impactSound = audioSources[1];
         
         _target = new Vector2(0, 1); // Points upwards
     }
@@ -35,6 +38,14 @@ public class ShipBehaviour : MonoBehaviour
 
         ApplyGravity();
         ConstrainToPlane();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.gameObject.tag.Contains("Player"))
+        {
+            _impactSound.Play();
+        }
     }
 
     private bool BoostButtonPressed()
