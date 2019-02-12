@@ -7,13 +7,18 @@ public class ShipBehaviour : MonoBehaviour
     public float Acceleration = 60f;
     public float TurnRate = 3f;
     public Text DebugText;
+    
     private Vector2 _previousDirection;
     private Vector2 _target;
     private bool _joystickDetected;
     private KeyCode boostButton;
 
+    private AudioSource _audioSource;
+
     private void Start()
     {
+        _audioSource = GetComponent<AudioSource>();
+        
         _target = new Vector2(0, 1); // Points upwards
         _joystickDetected = Input.GetJoystickNames().Length > 0;
         InitializeBoostButton();
@@ -67,6 +72,9 @@ public class ShipBehaviour : MonoBehaviour
     // We'll brake any horizontal and upwards movement while keeping gravity intact.
     private void Drag()
     {
+        if (_audioSource.isPlaying)
+            _audioSource.Pause();
+        
         var dragMultiplier = 0.99f;
         
         var rigidBody = GetComponent<Rigidbody>();
@@ -89,6 +97,9 @@ public class ShipBehaviour : MonoBehaviour
 
     private void Boost()
     {
+        if (!_audioSource.isPlaying)
+            _audioSource.Play();    
+        
         var direction = new Vector3(_target.x, 0, _target.y).normalized;
         
         var rigidBody = GetComponent<Rigidbody>();
