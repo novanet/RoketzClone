@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ShipBehaviour : MonoBehaviour
@@ -13,24 +9,56 @@ public class ShipBehaviour : MonoBehaviour
     public Text DebugText;
     private Vector2 _previousDirection;
     private Vector2 _target;
+    private bool _joystickDetected;
+    private KeyCode boostButton;
 
-    void Update()
+    private void Start()
     {
-        var horizontal = Input.GetAxis("Horizontal");
-        var vertical = Input.GetAxis("Vertical");
+        _target = new Vector2(0, 1); // Points upwards
+        _joystickDetected = Input.GetJoystickNames().Length > 0;
+        InitializeBoostButton();
+        Debug.Log("Joystick attached = " + _joystickDetected);
+    }
 
-        if (Mathf.Abs(horizontal) > 0.1 || Mathf.Abs(vertical) > 0.1f)
-        {
-            _target = new Vector2(horizontal, vertical);    
-        }
+    private void InitializeBoostButton()
+    {
+        if (_joystickDetected)
+            boostButton = KeyCode.Joystick1Button0;
+        else
+            boostButton = KeyCode.Space;
+    }
+
+    void FixedUpdate()
+    {
+        SetDirectionByControllerInput();
 
         Rotate();
-        
-        if (Input.GetKey(KeyCode.JoystickButton0))
+
+        if (Input.GetKey(boostButton))
             Boost();
 
         ApplyGravity();
         ConstrainToPlane();
+    }
+
+    private void SetDirectionByControllerInput()
+    {
+        if (_joystickDetected)
+        {
+            var horizontal = Input.GetAxis("Horizontal");
+            var vertical = Input.GetAxis("Vertical");
+            if (Mathf.Abs(horizontal) > 0.1 || Mathf.Abs(vertical) > 0.1f)
+            {
+                _target = new Vector2(horizontal, vertical);
+            }
+        }
+        else
+        {
+            if (Input.GetKey(KeyCode.A))
+                _target = VectorExtensions.Rotate(_target, 6f);
+            else if (Input.GetKey(KeyCode.D))
+                _target = VectorExtensions.Rotate(_target, -6f);
+        }
     }
 
     private void ConstrainToPlane()
@@ -92,5 +120,22 @@ public class ShipBehaviour : MonoBehaviour
            transform.rotation,
            Quaternion.LookRotation(new Vector3(_target.x, 0, _target.y), transform.up),
            Time.deltaTime * TurnRate);
+    }
+}
+
+public static class VectorExtensions
+{
+    public static Vector2 Rotate(this Vector2 v, float degrees)
+    {
+        return Quaternion.Euler(0, 0, degrees) * v;
+
+        //float radians = degrees * Mathf.Deg2Rad;
+        //float sin = Mathf.Sin(radians);
+        //float cos = Mathf.Cos(radians);
+
+        //float tx = v.x;
+        //float ty = v.y;
+
+        //return new Vector2(cos * tx - sin * ty, sin * tx + cos * ty);
     }
 }
