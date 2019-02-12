@@ -55,9 +55,9 @@ public class ShipBehaviour : MonoBehaviour
         else
         {
             if (Input.GetKey(KeyCode.A))
-                _target = VectorExtensions.Rotate(_target, 6f);
+                _target = VectorExtensions.Rotate(_target, TurnRate);
             else if (Input.GetKey(KeyCode.D))
-                _target = VectorExtensions.Rotate(_target, -6f);
+                _target = VectorExtensions.Rotate(_target, -TurnRate);
         }
     }
 
