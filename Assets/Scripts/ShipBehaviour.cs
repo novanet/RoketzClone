@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class ShipBehaviour : MonoBehaviour
 {
     public float TopSpeed = 40f;
-    public float Acceleration = 100f;
+    public float Acceleration = 60f;
     public float TurnRate = 3f;
     public Text DebugText;
     private Vector2 _previousDirection;
@@ -36,6 +36,9 @@ public class ShipBehaviour : MonoBehaviour
 
         if (Input.GetKey(boostButton))
             Boost();
+        else
+            Drag();
+            
 
         ApplyGravity();
         ConstrainToPlane();
@@ -61,6 +64,19 @@ public class ShipBehaviour : MonoBehaviour
         }
     }
 
+    // We'll brake any horizontal and upwards movement while keeping gravity intact.
+    private void Drag()
+    {
+        var dragMultiplier = 0.99f;
+        
+        var rigidBody = GetComponent<Rigidbody>();
+        var velocity = rigidBody.velocity;
+        velocity.x = velocity.x * dragMultiplier;
+        if (velocity.z > 0f)
+            velocity.z = velocity.z * dragMultiplier;
+        rigidBody.velocity = velocity;
+    }
+
     private void ConstrainToPlane()
     {
         transform.position = new Vector3(transform.position.x, 0, transform.position.z);
@@ -73,19 +89,25 @@ public class ShipBehaviour : MonoBehaviour
 
     private void Boost()
     {
-        var direction = new Vector3(_target.x, 0, _target.y);
+        var direction = new Vector3(_target.x, 0, _target.y).normalized;
         
         var rigidBody = GetComponent<Rigidbody>();
-        rigidBody.AddForce((transform.forward + direction).normalized * Acceleration);
-
         var velocity = rigidBody.velocity;
-        if (velocity.magnitude > TopSpeed)
-        {
-            velocity = velocity.normalized * TopSpeed;
-            rigidBody.velocity = velocity;
-        }
+        velocity += direction * Acceleration * Time.deltaTime;
+
+        velocity = LimitToMaxSpeed(velocity);
+
+        rigidBody.velocity = velocity;
         
         DebugText.text = $"Speed: {velocity.magnitude}";        
+    }
+
+    private Vector3 LimitToMaxSpeed(Vector3 velocity)
+    {
+        if (velocity.magnitude > TopSpeed)
+            return velocity.normalized * TopSpeed;
+
+        return velocity;
     }
 
     private void Rotate()
