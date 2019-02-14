@@ -7,15 +7,15 @@ InputManager:
   m_Axes:
   - serializedVersion: 3
     m_Name: Player1.Horizontal
-    descriptiveName: 
-    descriptiveNegativeName: 
+    descriptiveName: Look right
+    descriptiveNegativeName: Look left
     negativeButton: 
     positiveButton: 
-    altNegativeButton: a
-    altPositiveButton: d
-    gravity: 3
-    dead: 0.1
-    sensitivity: 3
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0
+    dead: 0.2
+    sensitivity: 1
     snap: 1
     invert: 0
     type: 2
@@ -23,28 +23,28 @@ InputManager:
     joyNum: 1
   - serializedVersion: 3
     m_Name: Player1.Vertical
-    descriptiveName: 
-    descriptiveNegativeName: 
+    descriptiveName: Look up
+    descriptiveNegativeName: Look down
     negativeButton: 
     positiveButton: 
-    altNegativeButton: s
-    altPositiveButton: w
-    gravity: 3
-    dead: 0.1
-    sensitivity: 3
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0
+    dead: 0.2
+    sensitivity: 1
     snap: 1
-    invert: 0
+    invert: 1
     type: 2
     axis: 1
     joyNum: 1
   - serializedVersion: 3
     m_Name: Player1.Boost
-    descriptiveName: 
+    descriptiveName: Fly
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: space
+    positiveButton: joystick 1 button 0
     altNegativeButton: 
-    altPositiveButton: 
+    altPositiveButton: space
     gravity: 1000
     dead: 0.001
     sensitivity: 1000
@@ -55,12 +55,12 @@ InputManager:
     joyNum: 1
   - serializedVersion: 3
     m_Name: Player1.Fire1
-    descriptiveName: 
+    descriptiveName: Shoot
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: left ctrl
+    positiveButton: 
     altNegativeButton: 
-    altPositiveButton: mouse 0
+    altPositiveButton: 
     gravity: 1000
     dead: 0.001
     sensitivity: 1000
@@ -71,12 +71,12 @@ InputManager:
     joyNum: 1
   - serializedVersion: 3
     m_Name: Player1.Fire2
-    descriptiveName: 
+    descriptiveName: Shoot bigger
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: left alt
+    positiveButton: 
     altNegativeButton: 
-    altPositiveButton: mouse 1
+    altPositiveButton: 
     gravity: 1000
     dead: 0.001
     sensitivity: 1000
@@ -87,15 +87,15 @@ InputManager:
     joyNum: 1
   - serializedVersion: 3
     m_Name: Player2.Horizontal
-    descriptiveName: 
-    descriptiveNegativeName: 
+    descriptiveName: Look right
+    descriptiveNegativeName: Look left
     negativeButton: left
     positiveButton: right
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
-    dead: 0.1
-    sensitivity: 3
+    dead: 0.2
+    sensitivity: 1
     snap: 0
     invert: 0
     type: 2
@@ -103,15 +103,15 @@ InputManager:
     joyNum: 2
   - serializedVersion: 3
     m_Name: Player2.Vertical
-    descriptiveName: 
-    descriptiveNegativeName: 
+    descriptiveName: Look up
+    descriptiveNegativeName: Look down
     negativeButton: down
     positiveButton: up
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
-    dead: 0.1
-    sensitivity: 3
+    dead: 0.2
+    sensitivity: 1
     snap: 0
     invert: 1
     type: 2
@@ -119,10 +119,10 @@ InputManager:
     joyNum: 2
   - serializedVersion: 3
     m_Name: Player2.Boost
-    descriptiveName: 
+    descriptiveName: Fly
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: joystick 2 button 0
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -135,10 +135,10 @@ InputManager:
     joyNum: 2
   - serializedVersion: 3
     m_Name: Player2.Fire1
-    descriptiveName: 
+    descriptiveName: Shoot
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: joystick button 0
+    positiveButton: 
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -151,10 +151,10 @@ InputManager:
     joyNum: 2
   - serializedVersion: 3
     m_Name: Player2.Fire2
-    descriptiveName: 
+    descriptiveName: Shoot bigger
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: joystick button 1
+    positiveButton: 
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
