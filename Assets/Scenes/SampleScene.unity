@@ -461,7 +461,6 @@ GameObject:
   - component: {fileID: 448705393}
   - component: {fileID: 448705395}
   - component: {fileID: 448705397}
-  - component: {fileID: 448705396}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Player
@@ -488,7 +487,8 @@ MonoBehaviour:
   Wreckage:
   - {fileID: 196192892654450594, guid: 6cd6398d25286f549934cdc94ca4f606, type: 3}
   - {fileID: 7908559079058682694, guid: ffbdafc662b725c459c136965a2116e9, type: 3}
-  ShipExplosionPrefab: {fileID: 0}
+  ShipExplosionPrefab: {fileID: 4162978608561197382, guid: 9df3c604f7b0eb04bb15e47c7d72493c,
+    type: 3}
 --- !u!4 &448705392
 Transform:
   m_ObjectHideFlags: 0
@@ -612,7 +612,7 @@ Rigidbody:
   m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 20
@@ -713,18 +713,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &448705396
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 448705390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 100b5b8467f686249b97c4b05f7cc298, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!82 &448705397
 AudioSource:
   m_ObjectHideFlags: 0
@@ -945,7 +933,7 @@ Camera:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1
+    width: 0.5
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
@@ -1028,7 +1016,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 706248272}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
