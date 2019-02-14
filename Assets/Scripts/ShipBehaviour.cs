@@ -1,5 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Random = System.Random;
 
 public class ShipBehaviour : MonoBehaviour
 {
@@ -7,25 +13,41 @@ public class ShipBehaviour : MonoBehaviour
     public float Acceleration = 60f;
     public float TurnRate = 3f;
     public Text DebugText;
+
+    public Transform[] Wreckage;
+    [FormerlySerializedAs("ExplosionPrefab")] public GameObject ShipExplosionPrefab;
     
     private Vector2 _previousDirection;
     private Vector2 _target;
     private KeyCode boostButton;
+    private bool _dead = false;
 
     private AudioSource _boostSound;
     private AudioSource _impactSound;
+
+    private ParticleSystem _particleSystem;
+    private ParticleSystem.EmissionModule _particleEmission;
 
     private void Start()
     {
         var audioSources = GetComponents<AudioSource>();
         _boostSound = audioSources[0];
         _impactSound = audioSources[1];
+
+        _particleSystem = GetComponentInChildren<ParticleSystem>();
+        _particleEmission = _particleSystem.emission;
         
         _target = new Vector2(0, 1); // Points upwards
     }
 
     void FixedUpdate()
     {
+        if (_dead)
+        {
+            GetComponent<Rigidbody>().AddForce(Constants.Gravity * 10);
+            return;
+        }
+        
         SetDirectionByControllerInput();
 
         Rotate();
@@ -36,16 +58,36 @@ public class ShipBehaviour : MonoBehaviour
             Drag();
             
 
-        ApplyGravity();
         ConstrainToPlane();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.gameObject.tag.Contains("Player"))
+        if (collision.transform.gameObject.tag == "Player")
         {
-            _impactSound.Play();
+            if (!_impactSound.isPlaying)
+                _impactSound.Play();
+            Die();
         }
+
+        if (collision.transform.gameObject.tag == "Scenery" && _dead)
+        {
+            Explode();
+        }
+    }
+
+    private void Explode()
+    {
+        var explosion = Instantiate(ShipExplosionPrefab, transform.position, ShipExplosionPrefab.transform.rotation);
+        var time = explosion.GetComponent<AudioSource>().clip.length;
+        Destroy (explosion, time);
+
+        gameObject.SetActive(false);
+    }
+
+    private void Die()
+    {
+        _dead = true;
     }
 
     private bool BoostButtonPressed()
@@ -73,6 +115,8 @@ public class ShipBehaviour : MonoBehaviour
     {
         if (_boostSound.isPlaying)
             _boostSound.Pause();
+
+        _particleEmission.rateOverTime = new ParticleSystem.MinMaxCurve(0);
         
         var dragMultiplier = 0.99f;
         
@@ -89,15 +133,12 @@ public class ShipBehaviour : MonoBehaviour
         transform.position = new Vector3(transform.position.x, 0, transform.position.z);
     }
 
-    private void ApplyGravity()
-    {
-        GetComponent<Rigidbody>().AddForce(Constants.Gravity);
-    }
-
     private void Boost()
     {
         if (!_boostSound.isPlaying)
-            _boostSound.Play();    
+            _boostSound.Play();
+
+        _particleEmission.rateOverTime = new ParticleSystem.MinMaxCurve(300);
         
         var direction = new Vector3(_target.x, 0, _target.y).normalized;
         
