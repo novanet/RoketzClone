@@ -24,12 +24,18 @@ public class ShipBehaviour : MonoBehaviour
     private AudioSource _impactSound;
     private AudioSource _explosionSound;
 
+    private ParticleSystem _particleSystem;
+    private ParticleSystem.EmissionModule _particleEmission;
+
     private void Start()
     {
         var audioSources = GetComponents<AudioSource>();
         _boostSound = audioSources[0];
         _impactSound = audioSources[1];
         _explosionSound = audioSources[2];
+
+        _particleSystem = GetComponentInChildren<ParticleSystem>();
+        _particleEmission = _particleSystem.emission;
         
         _target = new Vector2(0, 1); // Points upwards
     }
@@ -64,7 +70,7 @@ public class ShipBehaviour : MonoBehaviour
             Die();
         }
 
-        if (collision.transform.gameObject.tag == "Scenery")
+        if (collision.transform.gameObject.tag == "Scenery" && _dead)
         {
             Explode();
         }
@@ -90,10 +96,10 @@ public class ShipBehaviour : MonoBehaviour
             
             var rigidbody = piece.GetComponent<Rigidbody>();
 
-            var direction = new Vector3(
-                UnityEngine.Random.Range(-1f, 1f),
+            var direction = Vector3.forward + new Vector3(
+                UnityEngine.Random.Range(-0.3f, 0.3f),
                 0f,
-                UnityEngine.Random.Range(0.25f, 1f)
+                1f
                 ).normalized;
 
             rigidbody.AddForce(direction * UnityEngine.Random.Range(0.1f, 0.5f));
@@ -144,6 +150,8 @@ public class ShipBehaviour : MonoBehaviour
     {
         if (_boostSound.isPlaying)
             _boostSound.Pause();
+
+        _particleEmission.rateOverTime = new ParticleSystem.MinMaxCurve(0);
         
         var dragMultiplier = 0.99f;
         
@@ -163,7 +171,9 @@ public class ShipBehaviour : MonoBehaviour
     private void Boost()
     {
         if (!_boostSound.isPlaying)
-            _boostSound.Play();    
+            _boostSound.Play();
+
+        _particleEmission.rateOverTime = new ParticleSystem.MinMaxCurve(300);
         
         var direction = new Vector3(_target.x, 0, _target.y).normalized;
         
