@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = System.Random;
 
@@ -14,6 +15,7 @@ public class ShipBehaviour : MonoBehaviour
     public Text DebugText;
 
     public Transform[] Wreckage;
+    [FormerlySerializedAs("ExplosionPrefab")] public GameObject ShipExplosionPrefab;
     
     private Vector2 _previousDirection;
     private Vector2 _target;
@@ -22,7 +24,6 @@ public class ShipBehaviour : MonoBehaviour
 
     private AudioSource _boostSound;
     private AudioSource _impactSound;
-    private AudioSource _explosionSound;
 
     private ParticleSystem _particleSystem;
     private ParticleSystem.EmissionModule _particleEmission;
@@ -32,7 +33,6 @@ public class ShipBehaviour : MonoBehaviour
         var audioSources = GetComponents<AudioSource>();
         _boostSound = audioSources[0];
         _impactSound = audioSources[1];
-        _explosionSound = audioSources[2];
 
         _particleSystem = GetComponentInChildren<ParticleSystem>();
         _particleEmission = _particleSystem.emission;
@@ -78,46 +78,11 @@ public class ShipBehaviour : MonoBehaviour
 
     private void Explode()
     {
-        var position = transform.position;
-        
-        _explosionSound.Play();
-        _boostSound.Stop();
-        DisableEverything();
-        
-        for (var i = 0; i < 30; i++)
-        {
-            var index = UnityEngine.Random.Range(0, 2);
-            var piece = Instantiate(Wreckage[index], position + new Vector3(0, 0, 2f), Quaternion.Euler(0, 0, 0));
-            piece.transform.localScale = new Vector3(
-                UnityEngine.Random.Range(0.3f, 2.0f),
-                UnityEngine.Random.Range(0.3f, 2.0f),
-                UnityEngine.Random.Range(0.3f, 2.0f)
-                );
-            
-            var rigidbody = piece.GetComponent<Rigidbody>();
+        var explosion = Instantiate(ShipExplosionPrefab, transform.position, ShipExplosionPrefab.transform.rotation);
+        var time = explosion.GetComponent<AudioSource>().clip.length;
+        Destroy (explosion, time);
 
-            var direction = Vector3.forward + new Vector3(
-                UnityEngine.Random.Range(-0.3f, 0.3f),
-                0f,
-                1f
-                ).normalized;
-
-            rigidbody.AddForce(direction * UnityEngine.Random.Range(0.1f, 0.5f));
-
-            rigidbody.rotation = Quaternion.Euler(
-                UnityEngine.Random.Range(0.1f, 0.9f),
-                UnityEngine.Random.Range(0.1f, 0.9f),
-                UnityEngine.Random.Range(0.1f, 0.9f)
-            );
-        }
-    }
-
-    private void DisableEverything()
-    {
-        Destroy(GetComponent<Gravity>());
-        Destroy(GetComponent<Rigidbody>());
-        
-        transform.position = new Vector3(transform.position.x, -200, transform.position.z);
+        gameObject.SetActive(false);
     }
 
     private void Die()
