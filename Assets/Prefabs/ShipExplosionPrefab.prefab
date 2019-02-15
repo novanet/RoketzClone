@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 944873848727150009}
   - component: {fileID: 5903953642797767555}
   - component: {fileID: 5902045671244879960}
+  - component: {fileID: 5147457645616096076}
   m_Layer: 0
   m_Name: ShipExplosionPrefab
   m_TagString: Untagged
@@ -608,7 +609,7 @@ ParticleSystem:
     gravityModifier:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: -0.43
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -977,7 +978,7 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 0
-        scalar: 150
+        scalar: 300
         minScalar: 30
         maxCurve:
           serializedVersion: 2
@@ -2185,7 +2186,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
   ForceModule:
-    enabled: 0
+    enabled: 1
     x:
       serializedVersion: 2
       minMaxState: 0
@@ -4869,3 +4870,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!54 &5147457645616096076
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4162978608561197382}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
