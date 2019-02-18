@@ -1,4 +1,5 @@
-﻿using DefaultNamespace;
+﻿using System.Linq;
+using DefaultNamespace;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -159,7 +160,7 @@ public class ShipBehaviour : MonoBehaviour
             Die();
         }
 
-        if (collision.transform.gameObject.tag == "Scenery" && _dead)
+        if (new[]{"Scenery", "Depot"}.Contains(collision.transform.gameObject.tag) && _dead)
         {
             Explode();
         }
