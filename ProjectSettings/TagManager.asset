@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Depot
   - Scenery
+  - Bullet
   layers:
   - Default
   - TransparentFX

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Linq;
 using DefaultNamespace;
 using TMPro;
 using UnityEngine;
@@ -10,18 +11,23 @@ public class ShipBehaviour : MonoBehaviour
     public float TopSpeed = 40f;
     public float Acceleration = 60f;
     public float TurnRate = 3f;
-    public Text DebugText;
     public int PlayerNumber;
+    public int MaxHealth = 10;
 
     private PlayerInput _playerInput;
 
-    public Transform[] Wreckage;
-    [FormerlySerializedAs("ExplosionPrefab")] public GameObject ShipExplosionPrefab;
+    public GameObject ShipExplosionPrefab;
+    public Image HealthBar;
     
     private Vector2 _previousDirection;
     private Vector2 _target;
     private KeyCode boostButton;
     private bool _dead = false;
+    private int _health;
+    
+    // Time in Unity is in seconds
+    private float _timeOfLastImpact = 0f;
+    private float _minimumTimeBetweenImpacts = 1f;
 
     private AudioSource _boostSound;
     private AudioSource _impactSound;
@@ -45,13 +51,17 @@ public class ShipBehaviour : MonoBehaviour
         _particleEmission = _particleSystem.emission;
         
         _target = transform.position.ToVector2() + new Vector2(0, 1); // Points upwards
+
+        _health = MaxHealth;
+        HealthBar.fillMethod = Image.FillMethod.Horizontal;
+        HealthBar.type = Image.Type.Filled;
     }
 
     void FixedUpdate()
     {
         if (_dead)
         {
-            _rigidbody.AddForce(Constants.Gravity * 10);
+            _rigidbody.AddForce(Constants.Gravity * 20);
             return;
         }
         
@@ -153,17 +163,46 @@ public class ShipBehaviour : MonoBehaviour
     
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.gameObject.tag == "Player")
+        var otherTag = collision.transform.gameObject.tag; 
+        
+        if (otherTag == "Player")
         {
             if (!_impactSound.isPlaying)
                 _impactSound.Play();
-            Die();
+            
+            Impact(3);
         }
 
-        if (new[]{"Scenery", "Depot"}.Contains(collision.transform.gameObject.tag) && _dead)
-        {
+        if (_dead)
             Explode();
+
+        if (otherTag == "Bullet")
+        {
+            var damage = collision.gameObject.GetComponent<BulletBehaviour>().Damage;
+            TakeDamage(damage);
         }
+        
+        //if not bullet or player, it's scenery
+        Impact(4);
+
+        if (_health <= 0)
+            Die();
+    }
+
+    private void Impact(int damage)
+    {
+        if (Time.time - _timeOfLastImpact > _minimumTimeBetweenImpacts)
+        {
+            TakeDamage(damage);
+            _timeOfLastImpact = Time.time;
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log($"Player {PlayerNumber} is dead");
+        SetHealth(0);
+        _dead = true; // we'll start dropping _fast_ and explode at any next collision
     }
 
     private void Explode()
@@ -175,9 +214,16 @@ public class ShipBehaviour : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void Die()
+    private void TakeDamage(int amount)
     {
-        _dead = true;
+        SetHealth(_health - amount);
+    }
+
+    private void SetHealth(int amount)
+    {
+        _health = amount;
+        Debug.Log($"Player {PlayerNumber}: {_health}hp");
+        HealthBar.fillAmount = (float)_health / MaxHealth;
     }
 
 }

@@ -22,6 +22,22 @@ InputManager:
     axis: 0
     joyNum: 1
   - serializedVersion: 3
+    m_Name: Player1.Horizontal
+    descriptiveName: Look right
+    descriptiveNegativeName: Look left
+    negativeButton: a
+    positiveButton: d
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.2
+    sensitivity: 1000
+    snap: 1
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 1
+  - serializedVersion: 3
     m_Name: Player1.Vertical
     descriptiveName: Look up
     descriptiveNegativeName: Look down
@@ -35,6 +51,22 @@ InputManager:
     snap: 1
     invert: 1
     type: 2
+    axis: 1
+    joyNum: 1
+  - serializedVersion: 3
+    m_Name: Player1.Vertical
+    descriptiveName: Look up
+    descriptiveNegativeName: Look down
+    negativeButton: s
+    positiveButton: w
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.2
+    sensitivity: 1000
+    snap: 1
+    invert: 0
+    type: 0
     axis: 1
     joyNum: 1
   - serializedVersion: 3
@@ -58,7 +90,7 @@ InputManager:
     descriptiveName: Shoot
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: joystick 1 button 2
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000

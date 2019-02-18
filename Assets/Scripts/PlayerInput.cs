@@ -19,7 +19,7 @@ namespace DefaultNamespace
             
             if (Mathf.Abs(horizontal) > 0.1f || Mathf.Abs(vertical) > 0.1f)
                 _direction = new Vector2(horizontal, vertical);
-            Debug.Log($"Hor: {horizontal} Ver: {vertical}");
+            //Debug.Log($"Hor: {horizontal} Ver: {vertical}");
 
             return _direction;
         }
