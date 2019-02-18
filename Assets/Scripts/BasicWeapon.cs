@@ -47,6 +47,7 @@ public class BasicWeapon : MonoBehaviour
         _audioSource.Play();
         var bullet = Instantiate(BulletPrefab, transform.position, transform.rotation);
         bullet.GetComponent<Rigidbody>().velocity = _rigidbody.velocity + (transform.forward * BulletSpeed);
+        bullet.GetComponent<AudioSource>().pitch = UnityEngine.Random.Range(0.9f, 1.1f);
 
         _timeOfLastShot = Time.time;
     }

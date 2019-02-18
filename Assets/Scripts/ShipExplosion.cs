@@ -11,7 +11,7 @@ public class ShipExplosion : MonoBehaviour
         var position = transform.position;
         transform.rotation = Quaternion.Euler(Vector3.zero);
         
-        for (var i = 0; i < 5; i++)
+        for (var i = 0; i < 15; i++)
         {
             var index = UnityEngine.Random.Range(0, WreckagePrefab.Length);
             var piece = Instantiate(WreckagePrefab[index], position + new Vector3(0, 0, 2f), Quaternion.Euler(0, 0, 0));

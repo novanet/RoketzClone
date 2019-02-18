@@ -31,6 +31,7 @@ public class ShipBehaviour : MonoBehaviour
 
     private AudioSource _boostSound;
     private AudioSource _impactSound;
+    private AudioSource _bulletHitSound;
 
     private ParticleSystem _particleSystem;
     private ParticleSystem.EmissionModule _particleEmission;
@@ -46,6 +47,7 @@ public class ShipBehaviour : MonoBehaviour
         var audioSources = GetComponents<AudioSource>();
         _boostSound = audioSources[0];
         _impactSound = audioSources[1];
+        _bulletHitSound = audioSources[2];
 
         _particleSystem = GetComponentInChildren<ParticleSystem>();
         _particleEmission = _particleSystem.emission;
@@ -167,11 +169,15 @@ public class ShipBehaviour : MonoBehaviour
         
         if (otherTag == "Player")
         {
-            if (!_impactSound.isPlaying)
-                _impactSound.Play();
-            
             Impact(3);
         }
+
+        // if on depot and looking up-ish, do nothing
+        if (otherTag == "Depot" 
+            && transform.rotation.eulerAngles.z > 0 
+            && Mathf.Abs(transform.rotation.eulerAngles.x) < 0.4f 
+            && transform.position.z > collision.gameObject.transform.position.z)
+            return;
 
         if (_dead)
             Explode();
@@ -179,6 +185,8 @@ public class ShipBehaviour : MonoBehaviour
         if (otherTag == "Bullet")
         {
             var damage = collision.gameObject.GetComponent<BulletBehaviour>().Damage;
+            _bulletHitSound.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
+            _bulletHitSound.Play();
             TakeDamage(damage);
         }
         
@@ -195,6 +203,12 @@ public class ShipBehaviour : MonoBehaviour
         {
             TakeDamage(damage);
             _timeOfLastImpact = Time.time;
+
+            if (!_impactSound.isPlaying)
+            {
+                _impactSound.pitch = UnityEngine.Random.Range(0.8f, 1.2f);
+                _impactSound.Play();
+            }
         }
     }
 
